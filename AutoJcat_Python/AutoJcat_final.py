@@ -11,7 +11,7 @@ with open('C:/Users/darkh/Downloads/JCat_test.csv', 'r') as f:
     reader = csv.DictReader(f)
     for row in reader:
         # create a new Chrome session
-        driver = webdriver.Chrome()
+        driver = webdriver.Chrome() # You can changing to webdriver.Edge or Firefox
         driver.implicitly_wait(30)
         driver.maximize_window()
 
@@ -24,10 +24,10 @@ with open('C:/Users/darkh/Downloads/JCat_test.csv', 'r') as f:
 
         # find the dropdown and select an option
         dropdown = Select(driver.find_element(By.TAG_NAME, "select"))
-        dropdown.select_by_visible_text('Escherichia coli (strain K12)')
+        dropdown.select_by_visible_text('Escherichia coli (strain K12)') # Or the organisms you want in the dropdown
 
         # the names of the checkboxes you want to check
-        names = ['hairpin', 'rbs', 'restriction']
+        names = ['hairpin', 'rbs', 'restriction'] # Or other box in the website
 
         # loop through each name
         for name in names:
