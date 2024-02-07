@@ -5,15 +5,17 @@ import os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver.chrome.options import Options
+
+# create a new Chrome session
+chrome_options = Options()
+chrome_options.add_argument("--headless")  # Ensure GUI is off. Browser runs in the background.
 
 # read the CSV file
 with open('C:/Users/darkh/Downloads/JCat_test.csv', 'r') as f:
     reader = csv.DictReader(f)
     for row in reader:
-        # create a new Chrome session
-        driver = webdriver.Chrome() # You can changing to webdriver.Edge or Firefox
-        driver.implicitly_wait(30)
-        driver.maximize_window()
+        driver = webdriver.Chrome(options=chrome_options)  # Pass the options parameter here
 
         # navigate to the application home page
         driver.get("https://jcat.de/Start.jsp")
