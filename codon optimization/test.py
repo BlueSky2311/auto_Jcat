@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import csv
+import time
 
 # Start a new Chrome WebDriver session
 driver = webdriver.Chrome()
@@ -51,6 +52,6 @@ with open('C:/Users/darkh/Downloads/JCat_test.csv', 'r') as file:
 
         # Use JavaScript to click the checkbox
         driver.execute_script("arguments[0].click();", checkbox)
-
+time.sleep(10)
 # Comment out the following line to prevent the browser from closing
 # driver.quit()
