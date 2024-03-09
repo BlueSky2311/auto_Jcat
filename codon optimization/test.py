@@ -4,10 +4,13 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import csv
 import time
-
+from selenium.webdriver.chrome.options import Options
+import undetected_chromedriver as uc
 # Start a new Chrome WebDriver session
+#options = Options()
+#options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.6261.112 Safari/537.3")
 driver = webdriver.Chrome()
-
+driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
 # Open the CSV file
 with open('C:/Users/darkh/Downloads/JCat_test.csv', 'r') as file:
     reader = csv.reader(file)
@@ -52,6 +55,15 @@ with open('C:/Users/darkh/Downloads/JCat_test.csv', 'r') as file:
 
         # Use JavaScript to click the checkbox
         driver.execute_script("arguments[0].click();", checkbox)
-time.sleep(10)
+
+# Find the 'Submit' button using XPath and click it
+driver.execute_script('document.querySelector(\'button[ng-click="submit()"]\').click();')
+
+# Wait for the new page to load
+#WebDriverWait(driver, 10).until(EC.url_changes(driver.current_url))
+
+# Now you should be on the new page
+#print(driver.current_url)  # Prints the URL of the new page
+time.sleep(20)
 # Comment out the following line to prevent the browser from closing
 # driver.quit()
