@@ -39,6 +39,9 @@ with open('C:/Users/darkh/Downloads/JCat_test.csv', 'r') as file:
                 # Select this option
                 option.click()
                 break
+        
+        # Find the radio button with the ID 'radio2' and click it
+        driver.execute_script("document.getElementById('radio2').checked = true;")
 
         # Find all checkboxes within elements with the class ‘checkbox long-list’ and check each one
         checkboxes = driver.find_elements(By.CSS_SELECTOR, '.checkbox.long-list input[type=checkbox]')
@@ -48,6 +51,7 @@ with open('C:/Users/darkh/Downloads/JCat_test.csv', 'r') as file:
 
             # Use JavaScript to click the checkbox
             driver.execute_script("arguments[0].click();", checkbox)
+        
 
 # Close the WebDriver session
 #driver.quit()
