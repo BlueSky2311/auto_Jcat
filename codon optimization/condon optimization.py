@@ -8,7 +8,7 @@ import csv
 driver = webdriver.Chrome()
 
 # Open the CSV file
-with open('/workspaces/auto_Jcat/data test/JCat_test.csv', 'r') as file:
+with open('C:/Users/darkh/Downloads/JCat_test.csv', 'r') as file:
     reader = csv.reader(file)
     next(reader)  # Skip the header row
 
@@ -43,7 +43,11 @@ with open('/workspaces/auto_Jcat/data test/JCat_test.csv', 'r') as file:
         # Find all checkboxes within elements with the class ‘checkbox long-list’ and check each one
         checkboxes = driver.find_elements(By.CSS_SELECTOR, '.checkbox.long-list input[type=checkbox]')
         for checkbox in checkboxes:
-            checkbox.click()
+            # Scroll the checkbox into view
+            driver.execute_script("arguments[0].scrollIntoView();", checkbox)
+
+            # Use JavaScript to click the checkbox
+            driver.execute_script("arguments[0].click();", checkbox)
 
 # Close the WebDriver session
 #driver.quit()
