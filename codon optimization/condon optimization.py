@@ -5,10 +5,6 @@ from selenium.webdriver.support import expected_conditions as EC
 import csv
 import time
 
-# Start a new Chrome WebDriver session
-driver = webdriver.Chrome()
-driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
-
 # Open the CSV file
 with open('C:/Users/darkh/Downloads/JCat_test.csv', 'r') as file:
     reader = csv.reader(file)
@@ -26,6 +22,10 @@ with open('C:/Users/darkh/Downloads/JCat_test.csv', 'r') as file:
 
         # For each DNA sequence in the CSV file
         for row in reader:
+            # Start a new Chrome WebDriver session
+            driver = webdriver.Chrome()
+            driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+
             locus_tag = row[2]  # The locus tag is in the third column
             dna_sequence = row[5]  # The DNA sequence is in the sixth column
 
@@ -41,7 +41,7 @@ with open('C:/Users/darkh/Downloads/JCat_test.csv', 'r') as file:
             # Use JavaScript to input text into the CodeMirror editor
             driver.execute_script("arguments[0].CodeMirror.setValue(arguments[1]);", code_mirror, dna_sequence)
 
-            # Use JavaScript to select the 'Protein sequence' radio button
+            # Use JavaScript to select the 'DNA sequence' radio button
             driver.execute_script("document.getElementById('radio1').checked = true;")
 
             # Get all option elements within the select element
@@ -80,8 +80,9 @@ with open('C:/Users/darkh/Downloads/JCat_test.csv', 'r') as file:
             # Find the 'Submit' button using XPath and click it
             driver.execute_script('document.querySelector(\'button[ng-click="submit()"]\').click();')
 
-            time.sleep(10)
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, '.ng-scope')))
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, '.ng-scope label.ng-binding')))
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, '.ng-scope pre.ng-binding')))
+
             improved_dna_label = driver.find_element(By.CSS_SELECTOR, '.ng-scope label.ng-binding').text
             improved_dna_sequence = driver.find_element(By.CSS_SELECTOR, '.ng-scope pre.ng-binding').text
 
@@ -92,4 +93,5 @@ with open('C:/Users/darkh/Downloads/JCat_test.csv', 'r') as file:
             # Write the data row
             writer.writerow([locus_tag, len(improved_dna_sequence), gc_value, cai_value, improved_dna_sequence, 'BamHI, EcoRI, HindIII, NdeI, NotI, PstI, XhoI'])
 
-driver.quit()
+            # Close the current Chrome WebDriver session
+            driver.quit()
