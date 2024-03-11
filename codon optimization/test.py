@@ -4,13 +4,11 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import csv
 import time
-from selenium.webdriver.chrome.options import Options
-import undetected_chromedriver as uc
+
 # Start a new Chrome WebDriver session
-#options = Options()
-#options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.6261.112 Safari/537.3")
 driver = webdriver.Chrome()
 driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+
 # Open the CSV file
 with open('C:/Users/darkh/Downloads/JCat_test.csv', 'r') as file:
     reader = csv.reader(file)
@@ -18,7 +16,7 @@ with open('C:/Users/darkh/Downloads/JCat_test.csv', 'r') as file:
 
     # Read the first DNA sequence in the CSV file
     row = next(reader)
-    gene_name = row[1]  # The gene name is in the second column
+    locus_tag = row[2]  # The gene name is in the third column
     dna_sequence = row[5]  # The DNA sequence is in the sixth column
 
     # Navigate to the VectorBuilder website
@@ -34,7 +32,7 @@ with open('C:/Users/darkh/Downloads/JCat_test.csv', 'r') as file:
     driver.execute_script("arguments[0].CodeMirror.setValue(arguments[1]);", code_mirror, dna_sequence)
 
     # Use JavaScript to select the 'Protein sequence' radio button
-    driver.execute_script("document.getElementById('radio2').checked = true;")
+    driver.execute_script("document.getElementById('radio1').checked = true;")
 
     # Get all option elements within the select element
     options = driver.find_elements(By.TAG_NAME, 'option')
@@ -47,23 +45,52 @@ with open('C:/Users/darkh/Downloads/JCat_test.csv', 'r') as file:
             option.click()
             break
 
-    # Find all checkboxes within elements with the class ‘checkbox long-list’ and check each one
+    # Define the list of enzymes to select
+    enzymes_to_select = ['BamHI', 'EcoRI', 'HindIII', 'NdeI', 'NotI', 'PstI', 'XhoI']
+
+    # Find all checkboxes within elements with the class ‘checkbox long-list’
     checkboxes = driver.find_elements(By.CSS_SELECTOR, '.checkbox.long-list input[type=checkbox]')
+
+    # Loop through all checkboxes
     for checkbox in checkboxes:
-        # Scroll the checkbox into view
-        driver.execute_script("arguments[0].scrollIntoView();", checkbox)
+        # Get the parent label element
+        label = checkbox.find_element(By.XPATH, '..')
+        
+        # Get the text content of the label
+        enzyme_name = label.text.strip()
+        
+        # If the enzyme name is in the list of enzymes to select
+        if enzyme_name in enzymes_to_select:
+            # Scroll the checkbox into view
+            driver.execute_script("arguments[0].scrollIntoView();", checkbox)
+            
+            # Use JavaScript to click the checkbox
+            driver.execute_script("arguments[0].click();", checkbox)
 
-        # Use JavaScript to click the checkbox
-        driver.execute_script("arguments[0].click();", checkbox)
+    # Find the 'Submit' button using XPath and click it
+    driver.execute_script('document.querySelector(\'button[ng-click="submit()"]\').click();')
 
-# Find the 'Submit' button using XPath and click it
-driver.execute_script('document.querySelector(\'button[ng-click="submit()"]\').click();')
+time.sleep(10)
+   # Wait for the page to load completely
+WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, '.ng-scope')))
+    # Retrieve the improved DNA GC value, CAI value, and the improved DNA sequence
+improved_dna_label = driver.find_element(By.CSS_SELECTOR, '.ng-scope label.ng-binding').text
+improved_dna_sequence = driver.find_element(By.CSS_SELECTOR, '.ng-scope pre.ng-binding').text
 
-# Wait for the new page to load
-#WebDriverWait(driver, 10).until(EC.url_changes(driver.current_url))
+    # Parse the GC value and CAI value from the label text
+gc_value = improved_dna_label.split('GC=')[1].split('%')[0]
+cai_value = improved_dna_label.split('CAI=')[1]
 
-# Now you should be on the new page
-#print(driver.current_url)  # Prints the URL of the new page
-time.sleep(20)
-# Comment out the following line to prevent the browser from closing
-# driver.quit()
+# Define the output CSV file path
+output_csv_path = 'C:/Users/darkh/Downloads/JCat_test_result.csv'
+
+# Open the output CSV file
+with open(output_csv_path, 'w', newline='') as file:
+    writer = csv.writer(file)
+    
+    # Write the header row
+    writer.writerow(['Locus_tag', 'Length', 'gc_value', 'cai_value', 'Optimized_Sequence', 'Name of restricted enzyme'])
+    
+    # Write the data row
+    writer.writerow([locus_tag, len(improved_dna_sequence), gc_value, cai_value, improved_dna_sequence, 'BamHI, EcoRI, HindIII, NdeI, NotI, PstI, XhoI'])
+driver.quit()
