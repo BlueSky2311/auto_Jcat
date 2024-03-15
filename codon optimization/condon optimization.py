@@ -5,6 +5,10 @@ from selenium.webdriver.support import expected_conditions as EC
 import csv
 import time
 
+# Define Chrome options
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument("--headless")
+
 # Open the CSV file
 with open('C:/Users/darkh/Downloads/JCat_test.csv', 'r') as file:
     reader = csv.reader(file)
@@ -22,8 +26,8 @@ with open('C:/Users/darkh/Downloads/JCat_test.csv', 'r') as file:
 
         # For each DNA sequence in the CSV file
         for row in reader:
-            # Start a new Chrome WebDriver session
-            driver = webdriver.Chrome()
+            # Start a new Chrome WebDriver session in headless mode
+            driver = webdriver.Chrome(options=chrome_options)
             driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
 
             locus_tag = row[2]  # The locus tag is in the third column
@@ -41,7 +45,7 @@ with open('C:/Users/darkh/Downloads/JCat_test.csv', 'r') as file:
             # Use JavaScript to input text into the CodeMirror editor
             driver.execute_script("arguments[0].CodeMirror.setValue(arguments[1]);", code_mirror, dna_sequence)
 
-            # Use JavaScript to select the 'DNA sequence' radio button
+            # Use JavaScript to select the 'DNA sequence' button
             driver.execute_script("document.getElementById('radio1').checked = true;")
 
             # Get all option elements within the select element
@@ -80,9 +84,16 @@ with open('C:/Users/darkh/Downloads/JCat_test.csv', 'r') as file:
             # Find the 'Submit' button using XPath and click it
             driver.execute_script('document.querySelector(\'button[ng-click="submit()"]\').click();')
 
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, '.ng-scope label.ng-binding')))
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, '.ng-scope pre.ng-binding')))
+            # Wait until the label and pre elements are present on the page
+            while True:
+                try:
+                    WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.CSS_SELECTOR, '.ng-scope label.ng-binding')))
+                    WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.CSS_SELECTOR, '.ng-scope pre.ng-binding')))
+                    break
+                except:
+                    time.sleep(1)
 
+         # Retrieve the improved DNA GC value, CAI value, and the improved DNA sequence
             improved_dna_label = driver.find_element(By.CSS_SELECTOR, '.ng-scope label.ng-binding').text
             improved_dna_sequence = driver.find_element(By.CSS_SELECTOR, '.ng-scope pre.ng-binding').text
 
