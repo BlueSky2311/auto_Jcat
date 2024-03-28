@@ -62,7 +62,7 @@ with open('C:/Users/darkh/Downloads/JCat_test.csv', 'r') as file:
             # Define the list of enzymes to select
             enzymes_to_select = ['BamHI', 'EcoRI', 'HindIII', 'NdeI', 'NotI', 'PstI', 'XhoI']
 
-            # Find all checkboxes within elements with the class ‘checkbox long-list’
+            # Find all checkboxes within elements with the class 'checkbox long-list'
             checkboxes = driver.find_elements(By.CSS_SELECTOR, '.checkbox.long-list input[type=checkbox]')
 
             # Loop through all checkboxes
@@ -91,9 +91,9 @@ with open('C:/Users/darkh/Downloads/JCat_test.csv', 'r') as file:
                     WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.CSS_SELECTOR, '.ng-scope pre.ng-binding')))
                     break
                 except:
-                    time.sleep(1)
+                    time.sleep(2)  # Wait for 2 seconds before trying again
 
-         # Retrieve the improved DNA GC value, CAI value, and the improved DNA sequence
+            # Retrieve the improved DNA GC value, CAI value, and the improved DNA sequence
             improved_dna_label = driver.find_element(By.CSS_SELECTOR, '.ng-scope label.ng-binding').text
             improved_dna_sequence = driver.find_element(By.CSS_SELECTOR, '.ng-scope pre.ng-binding').text
 
