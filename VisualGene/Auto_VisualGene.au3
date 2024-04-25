@@ -72,6 +72,9 @@ For $i = 1 To $aFileList[0]
     ; Click on the "Perform" 
     MouseClick("left", 614, 192, 1)
 
+    ; Get the text from the Text_OptimizedSeq control
+    Local $sOptimizedSeq = ControlGetText("Visual Gene Developer 2.1  Build 797   [Untitled.vgd]", "", "[NAME:Text_OptimizedSeq]")
+
     ; Get the text from the Text_GCcontent control
     Local $sGCContent = ControlGetText("Visual Gene Developer 2.1  Build 797   [Untitled.vgd]", "", "[NAME:Text_GCcontent]")
 
@@ -81,8 +84,8 @@ For $i = 1 To $aFileList[0]
     ; Get the text from the Text_Nc control
     Local $sNcValue = ControlGetText("Visual Gene Developer 2.1  Build 797   [Untitled.vgd]", "", "[NAME:Text_Nc]")
 
-    ; Open the file for writing
-    Local $hFile = FileOpen($sResultsFilePath, $FO_OVERWRITE)
+    ; Open the file for appending
+    Local $hFile = FileOpen($sResultsFilePath, $FO_APPEND)
 
     ; Check if the file opened successfully
     If $hFile = -1 Then
@@ -91,7 +94,7 @@ For $i = 1 To $aFileList[0]
     EndIf
 
     ; Write the input file name, sequence, optimized sequence, %GC content, CAI value, and Nc value to the file in CSV format
-    FileWrite($hFile, $aFileList[$i] & "," & $sSequence & "," & $sGCContent & "," & $sCAIValue & "," & $sNcValue & @CRLF)
+    FileWrite($hFile, $aFileList[$i] & "," & $sSequence & "," & "," & $sOptimizedSeq & "," & $sGCContent & "," & $sCAIValue & "," & $sNcValue & @CRLF)
 
     ; Close the file
     FileClose($hFile)
