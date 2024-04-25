@@ -1,25 +1,43 @@
-; Include the needed libraries
-#include <MsgBoxConstants.au3>
-#include <FileConstants.au3>
-#include <Array.au3>
+; Include the File.au3 library for the _FileListToArray function
+#include <File.au3>
 
-; Define the path to the CSV file
-Local $sCSVFilePath = "C:\Users\Blue\Downloads\JCat_test.csv"
+; Define the path to the application
+Local $sFilePath = "C:\\Users\\Blue\\Downloads\\visual gene\\VisualGeneDeveloper.exe"
 
-; Read the CSV file into an array
-Local $aSequences
-_FileReadToArray($sCSVFilePath, $aSequences)
+; Define the path to the directory containing the sequence files
+Local $sDirectoryPath = "C:\\Users\\Blue\\Downloads\\test\\splited_sequences"
 
-; Loop through each sequence in the array
-For $i = 1 To UBound($aSequences) - 1
-    ; Split the line into an array
-    Local $aLine = StringSplit($aSequences[$i], ",")
+; Get the list of .txt files in the directory
+Local $aFileList = _FileListToArray($sDirectoryPath, "*.txt", 1)
 
-    ; Get the sequence from the line
-    Local $sSequence = $aLine[6]
+; Check if the file list was created successfully
+If @error Then
+    MsgBox($MB_SYSTEMMODAL, "", "An error occurred while reading the directory.")
+    Exit
+EndIf
 
-    ; Define the path to the application
-    Local $sFilePath = "C:\Users\Blue\Downloads\visual gene\VisualGeneDeveloper.exe"
+; Define the path to the results file
+Local $sResultsFilePath = "C:\\Users\\Blue\\Downloads\\test\\results.csv"
+
+; Open the file for writing
+Local $hFile = FileOpen($sResultsFilePath, $FO_OVERWRITE)
+
+; Check if the file opened successfully
+If $hFile = -1 Then
+    MsgBox($MB_SYSTEMMODAL, "", "An error occurred while opening the file.")
+    Exit
+EndIf
+
+; Write the header to the file in CSV format
+FileWrite($hFile, "Input txt file name,Input Sequence,Optimized Sequence,%GC Content,CAI Value,Nc Value" & @CRLF)
+
+; Loop through each file in the list
+For $i = 1 To $aFileList[0]
+    ; Define the path to the current sequence file
+    Local $sSequenceFilePath = $sDirectoryPath & "\\" & $aFileList[$i]
+
+    ; Read the sequence from the file
+    Local $sSequence = FileRead($sSequenceFilePath)
 
     ; Start the application
     Local $iPID = Run($sFilePath)
@@ -63,9 +81,6 @@ For $i = 1 To UBound($aSequences) - 1
     ; Get the text from the Text_Nc control
     Local $sNcValue = ControlGetText("Visual Gene Developer 2.1  Build 797   [Untitled.vgd]", "", "[NAME:Text_Nc]")
 
-    ; Define the path to the results file
-    Local $sResultsFilePath = "C:\Users\Blue\Desktop\results.csv"
-
     ; Open the file for writing
     Local $hFile = FileOpen($sResultsFilePath, $FO_OVERWRITE)
 
@@ -75,9 +90,8 @@ For $i = 1 To UBound($aSequences) - 1
         Exit
     EndIf
 
-    ; Write the input sequence, optimized sequence, %GC content, CAI value, and Nc value to the file in CSV format
-    FileWrite($hFile, "Input Sequence,Optimized Sequence,%GC Content,CAI Value,Nc Value" & @CRLF)
-    FileWrite($hFile, $sSequence & "," & $sGCContent & "," & $sCAIValue & "," & $sNcValue & @CRLF)
+    ; Write the input file name, sequence, optimized sequence, %GC content, CAI value, and Nc value to the file in CSV format
+    FileWrite($hFile, $aFileList[$i] & "," & $sSequence & "," & $sGCContent & "," & $sCAIValue & "," & $sNcValue & @CRLF)
 
     ; Close the file
     FileClose($hFile)
@@ -85,3 +99,5 @@ For $i = 1 To UBound($aSequences) - 1
     ; Close the application
     ProcessClose($iPID)
 Next
+; Close the file
+FileClose($hFile)
