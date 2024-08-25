@@ -1,5 +1,5 @@
 # Overview
-These script uses Selenium, AutoIT,etc. to interact with the some web tool, which is used for optimizing DNA sequences. It inputs a DNA sequence, selects an organism, checks certain options, and submits the form. It then waits for the results page to load, retrieves the text data from the webpage, and processes the text data to extract the improved DNA sequence, the Codon Adaptation Index (CAI) value, and the GC content of the improved sequence.
+These script uses Selenium, AutoIT, Jave Script, etc. to interact with the some web codon optimization tools, which is used for optimizing DNA sequences. It inputs a DNA sequence, selects an organism, checks certain options, and submits the form. It then waits for the results page to load, retrieves the text data from the webpage, and processes the text data to extract the improved DNA sequence, the Codon Adaptation Index (CAI) value, and the GC content of the improved sequence.
 
 The DNA sequences are read from a CSV file, and the results are saved in a text file named after the gene in the CSV file. After all the text files have been created, the script combines all the text files into a new CSV file.
     
